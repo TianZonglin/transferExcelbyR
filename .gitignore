@@ -1,7 +1,6 @@
-install_softwares*/
-*.xls
-*.xlsx
+*.*
 !re2016-03.xls
-.git*/
-
- 
+!io_write2mysql.R
+!processRecord.csv
+!README.md
+!testExcelOpenStatus.csv

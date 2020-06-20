@@ -4,3 +4,5 @@
 !processRecord.csv
 !README.md
 !testExcelOpenStatus.csv
+.gitignore
+deploy.bat

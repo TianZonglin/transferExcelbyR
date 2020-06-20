@@ -1,4 +1,6 @@
 install_softwares*/
+io_Input_Excel_Folder/*.xls
+io_Input_Excel_Folder/*.xlsx
 .git*/
 
  

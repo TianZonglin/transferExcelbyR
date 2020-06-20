@@ -18,10 +18,16 @@ setwd("C:\\Users\\zonglin\\OneDrive - Universiteit Utrecht\\Desktop\\ecProject\\
 # 建立Mysql连接 
 conn = dbConnect(MySQL(), user = 'root', password = 'root', dbname = 'ecproject',host = 'localhost')
 
+# 清空日志
+if(file.exists("processRecord.csv")){
+  file.remove("processRecord.csv")
+}
+
+
 # 列出所有表（测试连接）
 dbListTables(conn)
 # 设置字符集，表的字符集也应为gbk
-dbSendQuery(conn,'SET NAMES gbk')
+dbSendQuery(conn,'SET NAMES utf8')
 # 清空目标表、重置ID起始值
 dbSendQuery(conn,"TRUNCATE TABLE tb_from_excel;")
 dbSendQuery(conn,"ALTER TABLE tb_from_excel AUTO_INCREMENT=1;")
@@ -53,7 +59,7 @@ makeMatching <- function(fCop, fCountry, op) {
     xCountry <- NULL
   }
   try(xCop <- as.list(unlist(strsplit(unlist(fCop),split = ";")),split = ";"), silent = TRUE)
-  
+
   if(is.null(xCop) &&is.null(xCop)){        #Cop-null, Country-null
     
     print(paste(op," Cop-null, Country-null"))
@@ -97,17 +103,20 @@ makeMatching <- function(fCop, fCountry, op) {
 
 ################### 封装，读Excel，规则解析，构造sql并插入
 
+
+
 transExcel2MysqlDB <- function(fpath) {
   
   #"\\io_Input_Excel_Folder\\2016年1-10月\\re2016-03.xls"
   edata <- readxl::read_excel(fpath) 
   
-  edata <- edata[10:15,]  ######## 只实验6条记录
+  #edata <- edata[30:40,]  ######## 只实验6条记录
   View(edata)
   # 探测数据起始行终止行
   
   i = 1
   iStartRow = iEndRow = 0
+  sucs = errr = 0
   flag = TRUE
   while(TRUE){
     if(!is.na(as.numeric(edata[,1][i,]))){
@@ -124,15 +133,14 @@ transExcel2MysqlDB <- function(fpath) {
     i = i + 1
   }
   
-  # 构造SQL
-  # 买方6、买方国家7、卖方9、卖方国家15
   
+  ################## 构造SQL，买方6、买方国家7、卖方9、卖方国家15
   
   colNum = length(as.list(edata[1,]))
   if(colNum != 73){
     print(paste("Columns Number Error: ",colNum,", Not 73!"))
   }else{
-    ###################### 列数规整，开始构造sql
+
     endSqlArr = array()
     endSqlCounter= 1;
     for (i in iStartRow:iEndRow){
@@ -149,10 +157,10 @@ transExcel2MysqlDB <- function(fpath) {
         else{ endString <- paste(endString,"'",str_replace_all(unlist(as.list(edata[i,][j])),"'","’"),"'",",",sep="")}
       }
       
-      
-      
+      #获取合并后的买卖方+国家
       pBuyer = makeMatching(edata[i,6],edata[i,7],op="Buyer")  
       pSeller = makeMatching(edata[i,9],edata[i,15],op="Seller")  
+      
       if(is.null(pBuyer) && is.null(pSeller)){
         print("pBuyer-null, pSeller-null")
         tmp = NULL
@@ -200,28 +208,31 @@ transExcel2MysqlDB <- function(fpath) {
       }
       print(paste("length(endSqlArr) = ",length(endSqlArr)))
       
-      # 补全sql，循环执行并记录插入情况
-      if(file.exists("processRecord.csv")){
-        file.remove("processRecord.csv")
-      }
-      
-      for(index in 1:length(endSqlArr)){
-        finalSqlString = paste("INSERT INTO tb_from_excel(",preString,") values (",endSqlArr[index],")",sep="")
-        ac = NULL
-        try(ac <- dbSendQuery(conn,finalSqlString), silent=TRUE)
-        if(is.null(ac)){
-          ac = "● Failed"
-        }else{
-          ac = "Accepted"
-        }
+    }  
+    for(index in 1:length(endSqlArr)){
+      finalSqlString = paste("INSERT INTO tb_from_excel(",preString,") values (",endSqlArr[index],")",sep="")
+      ac = NULL
+      try(ac <- dbSendQuery(conn,finalSqlString), silent=TRUE)
+      if(is.null(ac)){
+        ac = "● Failed"
+        errr = errr + 1
         write(paste(ac,finalSqlString,sep="      "),"processRecord.csv",append = TRUE)
-        
+      }else{
+        ac = "Accepted"
+        sucs = sucs + 1
       }
+
     }
+
+    write(paste("Summary:      ","File > ",fpath,", ",iStartRow," : ",iEndRow,sep=""),"processRecord.csv",append = TRUE)
+    write(paste("Summary:      ","Excuted ",length(endSqlArr)," SQLs",sep=""),"processRecord.csv",append = TRUE)
+    write(paste("Summary:      ",sucs," Success, ",errr," Failed, ",(sucs/length(endSqlArr))*100,"% Accepted",sep=""),"processRecord.csv",append = TRUE)
+    write(paste("Summary:      ",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",sep=""),"processRecord.csv",append = TRUE)    
+    write(paste("Summary:      ",sep=""),"processRecord.csv",append = TRUE)    
+    
   }
+  c(sucs,errr,length(endSqlArr))
 } 
-
-
 
 
 ################## 最上层大循环，文件读取 #############
@@ -231,6 +242,7 @@ transExcel2MysqlDB <- function(fpath) {
 # 列出全部年份文件夹
 nameAllFolders = list.files("io_Input_Excel_Folder")   
 
+rst = c(0,0,0)
 
 canOpen<-array()
 index = 0
@@ -250,17 +262,24 @@ for( folder in nameAllFolders){
       }else{
         canOpen[index] = str_c("√    ",folder,"\\",excel,sep="")
         ######### 正常读取、解析 ########
-        tmp = str_c("io_Input_Excel_Folder\\",folder,"\\",excel,sep="")
-        if("io_Input_Excel_Folder\\2016年1-10月\\re2016-03.xls" == tmp){ # 限定单个文件测试
-           
-          transExcel2MysqlDB(tmp)
-        }
+        tmpPath = str_c("io_Input_Excel_Folder\\",folder,"\\",excel,sep="")
+        #if("io_Input_Excel_Folder\\2016年1-10月\\re2016-03.xls" == tmpPath){ # 限定单个文件测试
+          tmp = transExcel2MysqlDB(tmpPath)
+          rst = c(rst[1]+tmp[1],rst[2]+tmp[2],rst[3]+tmp[3])
+        #}
       }
       index = index + 1
     }
     
   }
 }
+
+write(paste("Finally:      ",sep=""),"processRecord.csv",append = TRUE)
+write(paste("Finally:      ","The whole proccess excuted ",rst[3]," SQLs",sep=""),"processRecord.csv",append = TRUE)
+write(paste("Finally:      (All together) ",rst[1]," Success, ",rst[2]," Failed, ",(rst[1]/rst[3])*100,"% Accepted",sep=""),"processRecord.csv",append = TRUE)
+write(paste("Finally:      ","Transfer data from Excel to Mysql..",sep=""),"processRecord.csv",append = TRUE)
+write(paste("Finally:      Finished...",sep=""),"processRecord.csv",append = TRUE)
+
 
 canOpen = data.frame(canOpen)
 View(canOpen)

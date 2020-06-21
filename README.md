@@ -39,6 +39,9 @@ Recommend to use R Studio to run it.
 
 
 You can find them all on the Internet.
+**Note: Use Navicat 11 Premium instead of Navicat 10.x (out of date)**
+Download it in https://pan.baidu.com/s/18zg6NNogRVRHHD-fEj9UCg AccessKey: cbkj
+
 
 #### install packages we need
 

@@ -82,7 +82,7 @@ If you have a huge number of excels and you just wanna test this code or catch t
 edata <- edata[30:35,] 
 ```
 
-### Logs
+### Logs (processRecord.csv)
 
 ![](https://cdn.jsdelivr.net/gh/TianZonglin/tuchuang/img/20200621113612.png)
 

@@ -103,7 +103,7 @@ Basically the tool could transfer data from (my) xls, xlsx files to mysql smooth
 
 ---
 
-[中文说明]()
+[中文说明](https://www.cz5h.com/article/528.html)
 
 ---
 

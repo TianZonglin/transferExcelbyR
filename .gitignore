@@ -7,3 +7,5 @@ deploy.bat
 !processRecord.csv
 !README.md
 !testExcelOpenStatus.csv
+!debug.R
+!tool_excel2mysql.R

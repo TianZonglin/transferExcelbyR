@@ -4,7 +4,6 @@
 #install.packages("readxl")
 #install.packages("readr")
 
-
 library("RMySQL")   # 建立数据库连接
 library("stringr")  # 引入字符串处理包
 library("readxl")   # 引入excel操作包
@@ -14,10 +13,8 @@ library("readr")   # 引入csv读写
 
 # 设置工作目录
 setwd("C:\\Users\\zonglin\\OneDrive - Universiteit Utrecht\\Desktop\\ecProject\\")
-
 # 建立Mysql连接 
 conn = dbConnect(MySQL(), user = 'root', password = 'root', dbname = 'ecproject',host = 'localhost')
-
 # 清空日志
 if(file.exists("processRecord.csv")){
   file.remove("processRecord.csv")
@@ -49,9 +46,7 @@ for(i in 2:length(preNames)){
 ###############  封装, 解析逻辑, X方，X方国家 
 
 makeMatching <- function(fCop, fCountry, op) {
-  
   xCop = xCountry = NULL
-  
   # 匹配Cop,Country
   try(xCountry <- as.list(unlist(strsplit(unlist(fCountry),split = ";")),split = ";"), silent = TRUE)
   # 0.00
@@ -59,40 +54,32 @@ makeMatching <- function(fCop, fCountry, op) {
     xCountry <- NULL
   }
   try(xCop <- as.list(unlist(strsplit(unlist(fCop),split = ";")),split = ";"), silent = TRUE)
-
   if(is.null(xCop) &&is.null(xCop)){        #Cop-null, Country-null
-    
     print(paste(op," Cop-null, Country-null"))
-    
   }else if(is.null(xCountry)){               #Cop-N, Country-null
     print(paste(op," Cop-N, Country-null"))
     for(ix in 1:length(xCop)){
-      xCop[ix] = c(xCop[ix],xCountry)
+      xCop[ix] = c(str_replace_all(xCop[ix],"'","’"),xCountry)
     }
   }else if(is.null(xCop)){                   #Cop-null, Country-N ?
-    
     print(paste(op," Cop-null, Country-N"))
-    
   }else{                                      #Cop-N, Country-M
     lenCop = length(xCop)
     lenCountry = length(xCountry)
     if(lenCop < lenCountry){                      # N < M ?
-      
       print(paste(op," Cop-N, Country-M, N < M"))
-      
     }else if(lenCop==lenCountry){                 # N = M
       print(paste(op," Cop-N, Country-M, N = M"))
       for(iy in 1:lenCop){
-        xCop[iy] = paste(xCop[iy],xCountry[iy],sep = ";")
+        xCop[iy] = paste(str_replace_all(xCop[iy],"'","’"),str_replace_all(xCountry[iy],"'","’"),sep = ";")
       } 
     }else{                                        # N > M
       print(paste(op," Cop-N, Country-M, N > M"))
       for(iy in 1:lenCop){
         if(iy >lenCountry){
-          xCop[iy] = paste(xCop[iy],xCountry[lenCountry],sep = ";")
+          xCop[iy] = paste(str_replace_all(xCop[iy],"'","’"),str_replace_all(xCountry[lenCountry],"'","’"),sep = ";")
         }else{
-          
-          xCop[iy] = paste(xCop[iy],xCountry[iy],sep = ";")
+          xCop[iy] = paste(str_replace_all(xCop[iy],"'","’"),str_replace_all(xCountry[iy],"'","’"),sep = ";")
         }
       }
     } 
@@ -103,17 +90,16 @@ makeMatching <- function(fCop, fCountry, op) {
 
 ################### 封装，读Excel，规则解析，构造sql并插入
 
-
-
 transExcel2MysqlDB <- function(fpath) {
   
   #"\\io_Input_Excel_Folder\\2016年1-10月\\re2016-03.xls"
+  lp = fpath
+  fpath = str_c("io_Input_Excel_Folder\\",fpath,sep="")
   edata <- readxl::read_excel(fpath) 
+  edata <- edata[30:45,]  ######## 只实验6条记录
+  #View(edata)
   
-  #edata <- edata[30:40,]  ######## 只实验6条记录
-  View(edata)
   # 探测数据起始行终止行
-  
   i = 1
   iStartRow = iEndRow = 0
   sucs = errr = 0
@@ -133,28 +119,30 @@ transExcel2MysqlDB <- function(fpath) {
     i = i + 1
   }
   
-  
   ################## 构造SQL，买方6、买方国家7、卖方9、卖方国家15
   
   colNum = length(as.list(edata[1,]))
   if(colNum != 73){
     print(paste("Columns Number Error: ",colNum,", Not 73!"))
   }else{
-
     endSqlArr = array()
     endSqlCounter= 1;
     for (i in iStartRow:iEndRow){
       # i =2 只实验一条的解析
       endString =NULL
       for(j in 2:colNum){
+        tmpd = str_replace_all(unlist(as.list(edata[i,][j])),"'","’")
         if(j==colNum){
-          endString <- paste(endString,"'",str_replace_all(unlist(as.list(edata[i,][j])),"'","’"),"'",sep="")
+          endString <- paste(endString,"'",tmpd,"'",sep="")
           break
-        }else if(j == 6){ endString <- paste(endString,"'@@@@@6B'",",",sep="")}
+        }
+        else if(j == 6){ endString <- paste(endString,"'@@@@@6B'",",",sep="")}
         else if(j == 7){ endString <- paste(endString,"'@@@@@7C'",",",sep="")}
         else if(j == 9){ endString <- paste(endString,"'@@@@@9S'",",",sep="")}
         else if(j == 15){ endString <- paste(endString,"'@@@@@15C'",",",sep="")}
-        else{ endString <- paste(endString,"'",str_replace_all(unlist(as.list(edata[i,][j])),"'","’"),"'",",",sep="")}
+        else if(j == 39){ 
+          endString <- paste(endString,"'",gsub("[\r\n]", " ", tmpd),"'",",",sep="")}
+        else{ endString <- paste(endString,"'",tmpd,"'",",",sep="")}
       }
       
       #获取合并后的买卖方+国家
@@ -177,7 +165,11 @@ transExcel2MysqlDB <- function(fpath) {
           tmp = str_replace(endString,"@@@@@6B", "NA") 
           tmp = str_replace(tmp,"@@@@@7C", "NA") 
           tmp = str_replace(tmp,"@@@@@9S", str_split(pSeller[iS],";")[[1]][1]) 
-          tmp = str_replace(tmp,"@@@@@15C",str_split(pSeller[iS],";")[[1]][2]) 
+          if(is.na(str_split(pSeller[iS],";")[[1]][2])){
+            tmp = str_replace(tmp,"@@@@@15C","NA")
+          } else {
+            tmp = str_replace(tmp,"@@@@@15C",str_split(pSeller[iS],";")[[1]][2]) 
+          }
           endSqlArr[endSqlCounter] = endString
           endSqlCounter = endSqlCounter +1
         }
@@ -185,8 +177,12 @@ transExcel2MysqlDB <- function(fpath) {
         print("pSeller-null")
         for(iB in 1:length(pBuyer)){
           tmp = NULL
-          tmp = str_replace(endString,"@@@@@6B", str_split(pBuyer[iB],";")[[1]][1]) 
-          tmp = str_replace(tmp,"@@@@@7C", str_split(pBuyer[iB],";")[[1]][2]) 
+          tmp = str_replace(endString,"@@@@@6B", str_split(pBuyer[iB],";")[[1]][1])
+          if(is.na(str_split(pBuyer[iB],";")[[1]][2])){
+            tmp = str_replace(tmp,"@@@@@7C", "NA")
+          } else {
+            tmp = str_replace(tmp,"@@@@@7C", str_split(pBuyer[iB],";")[[1]][2])
+          }
           tmp = str_replace(tmp,"@@@@@9S", "NA") 
           tmp = str_replace(tmp,"@@@@@15C","NA") 
           endSqlArr[endSqlCounter] = endString
@@ -198,9 +194,17 @@ transExcel2MysqlDB <- function(fpath) {
           for(iS in 1:length(pSeller)){
             tmp = NULL
             tmp = str_replace(endString,"@@@@@6B", str_split(pBuyer[iB],";")[[1]][1]) 
-            tmp = str_replace(tmp,"@@@@@7C", str_split(pBuyer[iB],";")[[1]][2]) 
+            if(is.na(str_split(pBuyer[iB],";")[[1]][2])){
+              tmp = str_replace(tmp,"@@@@@7C", "NA")
+            } else {
+              tmp = str_replace(tmp,"@@@@@7C", str_split(pBuyer[iB],";")[[1]][2])
+            }
             tmp = str_replace(tmp,"@@@@@9S", str_split(pSeller[iS],";")[[1]][1]) 
-            tmp = str_replace(tmp,"@@@@@15C",str_split(pSeller[iS],";")[[1]][2]) 
+            if(is.na(str_split(pSeller[iS],";")[[1]][2])){
+              tmp = str_replace(tmp,"@@@@@15C","NA")
+            } else {
+              tmp = str_replace(tmp,"@@@@@15C",str_split(pSeller[iS],";")[[1]][2]) 
+            }
             endSqlArr[endSqlCounter] = tmp
             endSqlCounter = endSqlCounter +1
           }
@@ -214,7 +218,7 @@ transExcel2MysqlDB <- function(fpath) {
       ac = NULL
       try(ac <- dbSendQuery(conn,finalSqlString), silent=TRUE)
       if(is.null(ac)){
-        ac = "● Failed"
+        ac = "ErrInfo:"
         errr = errr + 1
         write(paste(ac,finalSqlString,sep="      "),"processRecord.csv",append = TRUE)
       }else{
@@ -223,27 +227,22 @@ transExcel2MysqlDB <- function(fpath) {
       }
 
     }
-
-    write(paste("Summary:      ","File > ",fpath,", ",iStartRow," : ",iEndRow,sep=""),"processRecord.csv",append = TRUE)
+    write(paste("Summary:      ","Read success > ",lp,", ",iStartRow," : ",iEndRow,sep=""),"processRecord.csv",append = TRUE)
     write(paste("Summary:      ","Excuted ",length(endSqlArr)," SQLs",sep=""),"processRecord.csv",append = TRUE)
     write(paste("Summary:      ",sucs," Success, ",errr," Failed, ",(sucs/length(endSqlArr))*100,"% Accepted",sep=""),"processRecord.csv",append = TRUE)
-    write(paste("Summary:      ",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",sep=""),"processRecord.csv",append = TRUE)    
+    write(paste("Summary:      ","-----------------------------------",sep=""),"processRecord.csv",append = TRUE)    
     write(paste("Summary:      ",sep=""),"processRecord.csv",append = TRUE)    
     
   }
   c(sucs,errr,length(endSqlArr))
 } 
 
-
 ################## 最上层大循环，文件读取 #############
-
 
 # 开始操作读取文件
 # 列出全部年份文件夹
 nameAllFolders = list.files("io_Input_Excel_Folder")   
-
 rst = c(0,0,0)
-
 canOpen<-array()
 index = 0
 
@@ -258,32 +257,31 @@ for( folder in nameAllFolders){
       content <- NULL
       try(content <- readxl::read_excel(pathExcel), silent = TRUE)
       if(is.null(content)){
-        canOpen[index] = str_c("×    ",folder,"\\",excel,sep="")
+        print(str_c(folder,"\\",excel,sep=""))
+        canOpen[index] = str_c(folder,"\\",excel,sep="")
+        index = index + 1
       }else{
-        canOpen[index] = str_c("√    ",folder,"\\",excel,sep="")
         ######### 正常读取、解析 ########
-        tmpPath = str_c("io_Input_Excel_Folder\\",folder,"\\",excel,sep="")
-        #if("io_Input_Excel_Folder\\2016年1-10月\\re2016-03.xls" == tmpPath){ # 限定单个文件测试
+        tmpPath = str_c(folder,"\\",excel,sep="")
+        #if("io_Input_Excel_Folder\\2016年1-10月\\2016-08.xlsx" == tmpPath){ # 限定单个文件测试
           tmp = transExcel2MysqlDB(tmpPath)
           rst = c(rst[1]+tmp[1],rst[2]+tmp[2],rst[3]+tmp[3])
         #}
       }
-      index = index + 1
     }
-    
   }
 }
-
+write(paste("ErrInfo:      ",sep=""),"processRecord.csv",append = TRUE)
+for(i in 1:length(canOpen)){
+  write(paste("ErrInfo:      Unread files > ",canOpen[i], sep=""),"processRecord.csv",append = TRUE)
+}
+write(paste("Finally:      ",sep=""),"processRecord.csv",append = TRUE)
 write(paste("Finally:      ",sep=""),"processRecord.csv",append = TRUE)
 write(paste("Finally:      ","The whole proccess excuted ",rst[3]," SQLs",sep=""),"processRecord.csv",append = TRUE)
 write(paste("Finally:      (All together) ",rst[1]," Success, ",rst[2]," Failed, ",(rst[1]/rst[3])*100,"% Accepted",sep=""),"processRecord.csv",append = TRUE)
 write(paste("Finally:      ","Transfer data from Excel to Mysql..",sep=""),"processRecord.csv",append = TRUE)
 write(paste("Finally:      Finished...",sep=""),"processRecord.csv",append = TRUE)
 
-
-canOpen = data.frame(canOpen)
-View(canOpen)
-write.csv(canOpen,"testExcelOpenStatus.csv")
 
 # 收尾
 dbDisconnect(conn) 

@@ -1,53 +1,35 @@
-# åˆå§‹åŒ–ä¸€æ¬¡å³å¯
+# ³õÊ¼»¯Ò»´Î¼´¿É
 #install.packages("RMySQL")
 #install.packages("stringr")
 #install.packages("readxl")
 #install.packages("readr")
 
-library("RMySQL")   # å»ºç«‹æ•°æ®åº“è¿æ¥
-library("stringr")  # å¼•å…¥å­—ç¬¦ä¸²å¤„ç†åŒ…
-library("readxl")   # å¼•å…¥excelæ“ä½œåŒ…
-library("readr")   # å¼•å…¥csvè¯»å†™
+library("RMySQL")   # ½¨Á¢Êı¾İ¿âÁ¬½Ó
+library("stringr")  # ÒıÈë×Ö·û´®´¦Àí°ü
+library("readxl")   # ÒıÈëexcel²Ù×÷°ü
+library("readr")   # ÒıÈëcsv¶ÁĞ´
 
-################ å‡†å¤‡å·¥ä½œ
+################ ×¼±¸¹¤×÷
 
-# è®¾ç½®å·¥ä½œç›®å½•
+# ÉèÖÃ¹¤×÷Ä¿Â¼
 setwd("C:\\Users\\zonglin\\OneDrive - Universiteit Utrecht\\Desktop\\ecProject\\")
-# å»ºç«‹Mysqlè¿æ¥ 
+# ½¨Á¢MysqlÁ¬½Ó 
 conn = dbConnect(MySQL(), user = 'root', password = 'root', dbname = 'ecproject',host = 'localhost')
-# æ¸…ç©ºæ—¥å¿—
+# Çå¿ÕÈÕÖ¾
 if(file.exists("processRecord.csv")){
   file.remove("processRecord.csv")
 }
 
 
-# åˆ—å‡ºæ‰€æœ‰è¡¨ï¼ˆæµ‹è¯•è¿æ¥ï¼‰
+# ÁĞ³öËùÓĞ±í£¨²âÊÔÁ¬½Ó£©
 dbListTables(conn)
-# è®¾ç½®å­—ç¬¦é›†ï¼Œè¡¨çš„å­—ç¬¦é›†ä¹Ÿåº”ä¸ºgbk
-dbSendQuery(conn,'SET NAMES utf8')
-# æ¸…ç©ºç›®æ ‡è¡¨ã€é‡ç½®IDèµ·å§‹å€¼
-dbSendQuery(conn,"TRUNCATE TABLE tb_from_excel;")
-dbSendQuery(conn,"ALTER TABLE tb_from_excel AUTO_INCREMENT=1;")
+ 
 
-# å–å¾—æ•°æ®è¡¨å­—æ®µåpreNamesï¼Œæ‹¼æ¥å‰åŠæ®µ
-res <- dbSendQuery(conn,"select COLUMN_NAME from information_schema.COLUMNS where table_name = 'tb_from_excel'")
-preNames <- data.frame(dbFetch(res))[,1]
-dbClearResult(res)  
-preString = NULL
-for(i in 2:length(preNames)){
-  if(i ==length(preNames)){
-    preString = paste(preString,paste("`",preNames[i],"`",sep=""),sep="")
-    break
-  }
-  preString = paste(preString,paste("`",preNames[i],"`",sep=""),",",sep="")
-}
-
-
-###############  å°è£…, è§£æé€»è¾‘, Xæ–¹ï¼ŒXæ–¹å›½å®¶ 
+###############  ·â×°, ½âÎöÂß¼­, X·½£¬X·½¹ú¼Ò 
 
 makeMatching <- function(fCop, fCountry, op) {
   xCop = xCountry = NULL
-  # åŒ¹é…Cop,Country
+  # Æ¥ÅäCop,Country
   try(xCountry <- as.list(unlist(strsplit(unlist(fCountry),split = ";")),split = ";"), silent = TRUE)
   # 0.00
   if(!is.na(as.numeric(xCountry))){
@@ -59,7 +41,7 @@ makeMatching <- function(fCop, fCountry, op) {
   }else if(is.null(xCountry)){               #Cop-N, Country-null
     print(paste(op," Cop-N, Country-null"))
     for(ix in 1:length(xCop)){
-      xCop[ix] = c(str_replace_all(xCop[ix],"'","â€™"),xCountry)
+      xCop[ix] = c(str_replace_all(xCop[ix],"'","¡¯"),xCountry)
     }
   }else if(is.null(xCop)){                   #Cop-null, Country-N ?
     print(paste(op," Cop-null, Country-N"))
@@ -71,15 +53,15 @@ makeMatching <- function(fCop, fCountry, op) {
     }else if(lenCop==lenCountry){                 # N = M
       print(paste(op," Cop-N, Country-M, N = M"))
       for(iy in 1:lenCop){
-        xCop[iy] = paste(str_replace_all(xCop[iy],"'","â€™"),str_replace_all(xCountry[iy],"'","â€™"),sep = ";")
+        xCop[iy] = paste(str_replace_all(xCop[iy],"'","¡¯"),str_replace_all(xCountry[iy],"'","¡¯"),sep = ";")
       } 
     }else{                                        # N > M
       print(paste(op," Cop-N, Country-M, N > M"))
       for(iy in 1:lenCop){
         if(iy >lenCountry){
-          xCop[iy] = paste(str_replace_all(xCop[iy],"'","â€™"),str_replace_all(xCountry[lenCountry],"'","â€™"),sep = ";")
+          xCop[iy] = paste(str_replace_all(xCop[iy],"'","¡¯"),str_replace_all(xCountry[lenCountry],"'","¡¯"),sep = ";")
         }else{
-          xCop[iy] = paste(str_replace_all(xCop[iy],"'","â€™"),str_replace_all(xCountry[iy],"'","â€™"),sep = ";")
+          xCop[iy] = paste(str_replace_all(xCop[iy],"'","¡¯"),str_replace_all(xCountry[iy],"'","¡¯"),sep = ";")
         }
       }
     } 
@@ -88,18 +70,18 @@ makeMatching <- function(fCop, fCountry, op) {
 }
 
 
-################### å°è£…ï¼Œè¯»Excelï¼Œè§„åˆ™è§£æï¼Œæ„é€ sqlå¹¶æ’å…¥
+################### ·â×°£¬¶ÁExcel£¬¹æÔò½âÎö£¬¹¹Ôìsql²¢²åÈë
 
-transExcel2MysqlDB <- function(fpath) {
+transExcel2MysqlDB <- function(fpath,allFiles) {
   
-  #"\\io_Input_Excel_Folder\\2016å¹´1-10æœˆ\\re2016-03.xls"
+  #"\\io_Input_Excel_Folder\\2016Äê1-10ÔÂ\\re2016-03.xls"
   lp = fpath
   fpath = str_c("io_Input_Excel_Folder\\",fpath,sep="")
   edata <- readxl::read_excel(fpath) 
-  edata <- edata[30:45,]  ######## åªå®éªŒ6æ¡è®°å½•
+  edata <- edata[30:45,]  ######## Ö»ÊµÑé6Ìõ¼ÇÂ¼
   #View(edata)
   
-  # æ¢æµ‹æ•°æ®èµ·å§‹è¡Œç»ˆæ­¢è¡Œ
+  # Ì½²âÊı¾İÆğÊ¼ĞĞÖÕÖ¹ĞĞ
   i = 1
   iStartRow = iEndRow = 0
   sucs = errr = 0
@@ -119,7 +101,43 @@ transExcel2MysqlDB <- function(fpath) {
     i = i + 1
   }
   
-  ################## æ„é€ SQLï¼Œä¹°æ–¹6ã€ä¹°æ–¹å›½å®¶7ã€å–æ–¹9ã€å–æ–¹å›½å®¶15
+  # Ê×´ÎÔËĞĞ£¬³õÊ¼»¯±í 
+  if(allFiles==0){
+    dbSendQuery(conn,'SET NAMES utf8')
+    dbSendQuery(conn, "SET FOREIGN_KEY_CHECKS=0;")
+    dbSendQuery(conn, "DROP TABLE IF EXISTS `tb_from_excel`;")
+    createSql = NULL
+    for(ic in 1:(length(colnames(edata))+1)){
+      if(ic == 1){
+        createSql = paste(createSql,"`ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,PRIMARY KEY (`ID`)",",",sep="")
+      }else if(ic==(length(colnames(edata))+1)){
+        createSql = paste(createSql,"`COL",ic-1,"` varchar(255) DEFAULT NULL",sep="")
+      }else{
+        createSql = paste(createSql,"`COL",ic-1,"` varchar(255) DEFAULT NULL",",",sep="")
+      }
+      
+    }
+    createSql = paste("CREATE TABLE `tb_from_excel` (",createSql,") ENGINE=MyISAM DEFAULT CHARSET=utf8;",sep="")  
+    print(createSql)
+    dbSendQuery(conn, createSql)
+    dbSendQuery(conn,"ALTER TABLE tb_from_excel AUTO_INCREMENT=1;")
+
+  }
+  
+  # ¶ÁÈ¡ÁĞÃû
+  res <- dbSendQuery(conn,"select COLUMN_NAME from information_schema.COLUMNS where table_name = 'tb_from_excel'")
+  preNames <- data.frame(dbFetch(res))[,1]
+  dbClearResult(res)  
+  preString = NULL
+  for(i in 2:length(preNames)){
+    if(i ==length(preNames)){
+      preString = paste(preString,paste("`",preNames[i],"`",sep=""),sep="")
+      break
+    }
+    preString = paste(preString,paste("`",preNames[i],"`",sep=""),",",sep="")
+  }
+  
+  ################## ¹¹ÔìSQL£¬Âò·½6¡¢Âò·½¹ú¼Ò7¡¢Âô·½9¡¢Âô·½¹ú¼Ò15
   
   colNum = length(as.list(edata[1,]))
   if(colNum != 73){
@@ -128,10 +146,10 @@ transExcel2MysqlDB <- function(fpath) {
     endSqlArr = array()
     endSqlCounter= 1;
     for (i in iStartRow:iEndRow){
-      # i =2 åªå®éªŒä¸€æ¡çš„è§£æ
+      # i =2 Ö»ÊµÑéÒ»ÌõµÄ½âÎö
       endString =NULL
       for(j in 2:colNum){
-        tmpd = str_replace_all(unlist(as.list(edata[i,][j])),"'","â€™")
+        tmpd = str_replace_all(unlist(as.list(edata[i,][j])),"'","¡¯")
         if(j==colNum){
           endString <- paste(endString,"'",tmpd,"'",sep="")
           break
@@ -145,7 +163,7 @@ transExcel2MysqlDB <- function(fpath) {
         else{ endString <- paste(endString,"'",tmpd,"'",",",sep="")}
       }
       
-      #è·å–åˆå¹¶åçš„ä¹°å–æ–¹+å›½å®¶
+      #»ñÈ¡ºÏ²¢ºóµÄÂòÂô·½+¹ú¼Ò
       pBuyer = makeMatching(edata[i,6],edata[i,7],op="Buyer")  
       pSeller = makeMatching(edata[i,9],edata[i,15],op="Seller")  
       
@@ -225,7 +243,7 @@ transExcel2MysqlDB <- function(fpath) {
         ac = "Accepted"
         sucs = sucs + 1
       }
-
+      
     }
     write(paste("Summary:      ","Read success > ",lp,", ",iStartRow," : ",iEndRow,sep=""),"processRecord.csv",append = TRUE)
     write(paste("Summary:      ","Excuted ",length(endSqlArr)," SQLs",sep=""),"processRecord.csv",append = TRUE)
@@ -237,16 +255,16 @@ transExcel2MysqlDB <- function(fpath) {
   c(sucs,errr,length(endSqlArr))
 } 
 
-################## æœ€ä¸Šå±‚å¤§å¾ªç¯ï¼Œæ–‡ä»¶è¯»å– #############
+################## ×îÉÏ²ã´óÑ­»·£¬ÎÄ¼ş¶ÁÈ¡ #############
 
-# å¼€å§‹æ“ä½œè¯»å–æ–‡ä»¶
-# åˆ—å‡ºå…¨éƒ¨å¹´ä»½æ–‡ä»¶å¤¹
+# ¿ªÊ¼²Ù×÷¶ÁÈ¡ÎÄ¼ş
+# ÁĞ³öÈ«²¿Äê·İÎÄ¼ş¼Ğ
 nameAllFolders = list.files("io_Input_Excel_Folder")   
 rst = c(0,0,0)
 canOpen<-array()
 index = 0
-
-# éå†æ¯ä¸ªæ–‡ä»¶å¤¹ï¼ˆæ„é€ è®¿é—®è·¯å¾„ï¼Œè¿›å…¥ï¼Œåˆ—å‡ºxlsï¼Œæ„é€ è®¿é—®æ–‡ä»¶è·¯å¾„ï¼Œè®¿é—®ï¼‰
+cnt = 0
+# ±éÀúÃ¿¸öÎÄ¼ş¼Ğ£¨¹¹Ôì·ÃÎÊÂ·¾¶£¬½øÈë£¬ÁĞ³öxls£¬¹¹Ôì·ÃÎÊÎÄ¼şÂ·¾¶£¬·ÃÎÊ£©
 for( folder in nameAllFolders){
   pathFolder = paste("io_Input_Excel_Folder\\",folder,"\\", sep = "")
   nameAllExcels = list.files(pathFolder)   
@@ -261,11 +279,12 @@ for( folder in nameAllFolders){
         canOpen[index] = str_c(folder,"\\",excel,sep="")
         index = index + 1
       }else{
-        ######### æ­£å¸¸è¯»å–ã€è§£æ ########
+        ######### Õı³£¶ÁÈ¡¡¢½âÎö ########
         tmpPath = str_c(folder,"\\",excel,sep="")
-        #if("io_Input_Excel_Folder\\2016å¹´1-10æœˆ\\2016-08.xlsx" == tmpPath){ # é™å®šå•ä¸ªæ–‡ä»¶æµ‹è¯•
-          tmp = transExcel2MysqlDB(tmpPath)
-          rst = c(rst[1]+tmp[1],rst[2]+tmp[2],rst[3]+tmp[3])
+        #if("io_Input_Excel_Folder\\2016Äê1-10ÔÂ\\2016-08.xlsx" == tmpPath){ # ÏŞ¶¨µ¥¸öÎÄ¼ş²âÊÔ
+        tmp = transExcel2MysqlDB(tmpPath,cnt)
+        cnt = cnt+1
+        rst = c(rst[1]+tmp[1],rst[2]+tmp[2],rst[3]+tmp[3])
         #}
       }
     }
@@ -283,7 +302,7 @@ write(paste("Finally:      ","Transfer data from Excel to Mysql..",sep=""),"proc
 write(paste("Finally:      Finished...",sep=""),"processRecord.csv",append = TRUE)
 
 
-# æ”¶å°¾
+# ÊÕÎ²
 dbDisconnect(conn) 
 
 

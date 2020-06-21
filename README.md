@@ -1,11 +1,12 @@
-![](https://cdn.jsdelivr.net/gh/TianZonglin/tuchuang/img/20200621132903.png)
+![](https://cdn.jsdelivr.net/gh/TianZonglin/tuchuang/img/20200621141106.png)
+
 
 # transferExcelbyR
 
-### suitable scenarios
+### suitable scenarios and requirements
 
 - large number of excels stored in folders
-- they all have the same data (column) format 
+- ALL excels MUST have the same data (column) format 
 - only with 1 sheet in each excels
 - excels must located in the third level folder, example:
 

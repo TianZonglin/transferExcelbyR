@@ -83,7 +83,7 @@ transExcel2MysqlDB <- function(fpath,allFiles,stratmark = 1) {
 
     
   }
-  allFiles = allFiles +1
+ 
   
   res <- dbSendQuery(conn,"select COLUMN_NAME from information_schema.COLUMNS where table_name = 'tb_from_excel'")
   preNames <- data.frame(dbFetch(res))[,1]

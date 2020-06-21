@@ -3,6 +3,7 @@ deploy.bat
 *.bat
 *.*
 !ORGDATA.XLS
+!ORGDATA.XLS_let this file alone in the whole folder if you wanna test it
 !io_write2mysql.R
 !processRecord.csv
 !README.md

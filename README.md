@@ -3,6 +3,8 @@
 
 # transferExcelbyR
 
+**This is just used for learning coding, the formal way is to IMPORT xls or xlsx into MYSQL with Navicat or other SQL tools.**
+
 ### suitable scenarios and requirements
 
 - large number of Excels stored in folders

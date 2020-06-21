@@ -1,21 +1,21 @@
-Summary:      Read success > 2016年1-10月\2016-06.xlsx, 5 : 206
-Summary:      Excuted 202 SQLs
-Summary:      202 Success, 0 Failed, 100% Accepted
+Summary:      Read success > 2016年1-10月\2016-06.xlsx, 1 : 16
+Summary:      Excuted 27 SQLs
+Summary:      27 Success, 0 Failed, 100% Accepted
 Summary:      -----------------------------------
 Summary:      
-Summary:      Read success > 2016年1-10月\2016-07.xlsx, 5 : 180
-Summary:      Excuted 176 SQLs
-Summary:      176 Success, 0 Failed, 100% Accepted
+Summary:      Read success > 2016年1-10月\2016-07.xlsx, 1 : 16
+Summary:      Excuted 24 SQLs
+Summary:      24 Success, 0 Failed, 100% Accepted
 Summary:      -----------------------------------
 Summary:      
-Summary:      Read success > 2016年1-10月\2016-08.xlsx, 5 : 171
-Summary:      Excuted 167 SQLs
-Summary:      167 Success, 0 Failed, 100% Accepted
+Summary:      Read success > 2016年1-10月\2016-08.xlsx, 1 : 16
+Summary:      Excuted 21 SQLs
+Summary:      21 Success, 0 Failed, 100% Accepted
 Summary:      -----------------------------------
 Summary:      
-Summary:      Read success > 2016年1-10月\re2016-03.xls, 1 : 500
-Summary:      Excuted 500 SQLs
-Summary:      500 Success, 0 Failed, 100% Accepted
+Summary:      Read success > 2016年1-10月\re2016-03.xls, 1 : 16
+Summary:      Excuted 23 SQLs
+Summary:      23 Success, 0 Failed, 100% Accepted
 Summary:      -----------------------------------
 Summary:      
 ErrInfo:      
@@ -38,7 +38,7 @@ ErrInfo:      Unread files > 2016年1-10月\2016-09.xlsx
 ErrInfo:      Unread files > 2016年1-10月\2016-10.xlsx
 Finally:      
 Finally:      
-Finally:      The whole proccess excuted 1045 SQLs
-Finally:      (All together) 1045 Success, 0 Failed, 100% Accepted
+Finally:      The whole proccess excuted 95 SQLs
+Finally:      (All together) 95 Success, 0 Failed, 100% Accepted
 Finally:      Transfer data from Excel to Mysql..
 Finally:      Finished...

@@ -2,7 +2,7 @@
 deploy.bat
 *.bat
 *.*
-!re2016-03.xls
+!ORGDATA.XLS
 !io_write2mysql.R
 !processRecord.csv
 !README.md

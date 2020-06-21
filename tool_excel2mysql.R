@@ -36,7 +36,7 @@ transExcel2MysqlDB <- function(fpath,allFiles,stratmark = 1) {
   lp = fpath
   fpath = str_c("io_Input_Excel_Folder\\",fpath,sep="")
   edata <- readxl::read_excel(fpath) 
-  edata <- edata[30:35,]  ######## 只实验6条记录
+  #edata <- edata[30:35,]  ######## 只实验6条记录
   #View(edata)
   
   # 探测数据起始行终止行
@@ -45,13 +45,13 @@ transExcel2MysqlDB <- function(fpath,allFiles,stratmark = 1) {
   sucs = errr = 0
   flag = TRUE
   while(TRUE){
-    if(!is.na(as.numeric(edata[,1][i,]))){
+    if(!is.na(edata[,1][i,])){
       if(flag){
         iStartRow = i
         flag = FALSE
       }
     } 
-    if(is.na(as.numeric(edata[,1][i,])) && !flag){
+    if(is.na(edata[,1][i,]) && !flag){
       iEndRow = i-1
       print(i)
       break
@@ -69,9 +69,9 @@ transExcel2MysqlDB <- function(fpath,allFiles,stratmark = 1) {
       if(ic == 1){
         createSql = paste(createSql,"`ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,PRIMARY KEY (`ID`)",",",sep="")
       }else if(ic==(length(colnames(edata))+1)){
-        createSql = paste(createSql,"`",colnames(edata)[ic-1],"` varchar(255) DEFAULT NULL",sep="")
+        createSql = paste(createSql,"`COL",ic-1,"` varchar(255) DEFAULT NULL",sep="")
       }else{
-        createSql = paste(createSql,"`",colnames(edata)[ic-1],"` varchar(255) DEFAULT NULL",",",sep="")
+        createSql = paste(createSql,"`COL",ic-1,"` varchar(255) DEFAULT NULL",",",sep="")
       }
       
     }
@@ -160,7 +160,7 @@ for( folder in nameAllFolders){
   pathFolder = paste("io_Input_Excel_Folder\\",folder,"\\", sep = "")
   nameAllExcels = list.files(pathFolder)   
   for( excel in nameAllExcels){
-    if(str_ends(excel, ".xls")||str_ends(excel, ".xlsx")){
+    if(str_ends(excel, ".xls")||str_ends(excel, ".xlsx")||str_ends(excel, ".XLS")||str_ends(excel, ".XLSX")){
       pathExcel = paste(pathFolder,excel, sep = "")
       print(pathExcel)
       content <- NULL

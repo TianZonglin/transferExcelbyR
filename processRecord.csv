@@ -1,13 +1,44 @@
-Summary:      Read success > simples\ORGDATA.XLS, 1 : 51
-Summary:      Excuted 51 SQLs
-Summary:      51 Success, 0 Failed, 100% Accepted
+Summary:      Read success > 2016年1-10月\2016-06.xlsx, 5 : 206
+Summary:      Excuted 202 SQLs
+Summary:      202 Success, 0 Failed, 100% Accepted
+Summary:      -----------------------------------
+Summary:      
+Summary:      Read success > 2016年1-10月\2016-07.xlsx, 5 : 180
+Summary:      Excuted 176 SQLs
+Summary:      176 Success, 0 Failed, 100% Accepted
+Summary:      -----------------------------------
+Summary:      
+Summary:      Read success > 2016年1-10月\2016-08.xlsx, 5 : 171
+Summary:      Excuted 167 SQLs
+Summary:      167 Success, 0 Failed, 100% Accepted
+Summary:      -----------------------------------
+Summary:      
+Summary:      Read success > 2016年1-10月\re2016-03.xls, 1 : 500
+Summary:      Excuted 500 SQLs
+Summary:      500 Success, 0 Failed, 100% Accepted
 Summary:      -----------------------------------
 Summary:      
 ErrInfo:      
-ErrInfo:      Unread files > NA
+ErrInfo:      Unread files > 2015年\2015-02.xls
+ErrInfo:      Unread files > 2015年\2015-03.xls
+ErrInfo:      Unread files > 2015年\2015-04.xls
+ErrInfo:      Unread files > 2015年\2015-05.xls
+ErrInfo:      Unread files > 2015年\2015-06.xls
+ErrInfo:      Unread files > 2015年\2015-07.xls
+ErrInfo:      Unread files > 2015年\2015-08.xls
+ErrInfo:      Unread files > 2015年\2015-09.xls
+ErrInfo:      Unread files > 2015年\2015-10.xls
+ErrInfo:      Unread files > 2015年\2015-11.xls
+ErrInfo:      Unread files > 2016年1-10月\2016-01.xls
+ErrInfo:      Unread files > 2016年1-10月\2016-02.xls
+ErrInfo:      Unread files > 2016年1-10月\2016-03.xls
+ErrInfo:      Unread files > 2016年1-10月\2016-04.xls
+ErrInfo:      Unread files > 2016年1-10月\2016-05.xls
+ErrInfo:      Unread files > 2016年1-10月\2016-09.xlsx
+ErrInfo:      Unread files > 2016年1-10月\2016-10.xlsx
 Finally:      
 Finally:      
-Finally:      The whole proccess excuted 51 SQLs
-Finally:      (All together) 51 Success, 0 Failed, 100% Accepted
+Finally:      The whole proccess excuted 1045 SQLs
+Finally:      (All together) 1045 Success, 0 Failed, 100% Accepted
 Finally:      Transfer data from Excel to Mysql..
 Finally:      Finished...

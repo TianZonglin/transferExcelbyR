@@ -89,7 +89,7 @@ transExcel2MysqlDB <- function(fpath,allFiles,stratmark = 1) {
   preNames <- data.frame(dbFetch(res))[,1]
   dbClearResult(res)  
   preString = NULL
-  for(i in 2:length(preNames)){
+  for(i in (stratmark+1):length(preNames)){
     if(i ==length(preNames)){
       preString = paste(preString,paste("`",preNames[i],"`",sep=""),sep="")
       break
@@ -172,7 +172,7 @@ for( folder in nameAllFolders){
       }else{
         ######### 正常读取、解析 ########
         tmpPath = str_c(folder,"\\",excel,sep="")
-        tmp = transExcel2MysqlDB(tmpPath,cnt)
+        tmp = transExcel2MysqlDB(tmpPath,cnt,6)
         cnt = cnt+1
         rst = c(rst[1]+tmp[1],rst[2]+tmp[2],rst[3]+tmp[3])
       }

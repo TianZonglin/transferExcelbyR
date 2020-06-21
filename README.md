@@ -5,10 +5,10 @@
 
 ### suitable scenarios and requirements
 
-- large number of excels stored in folders
-- ALL excels MUST have the same data (column) format 
-- only with 1 sheet in each excels
-- excels must located in the third level folder, example:
+- large number of Excels stored in folders
+- ALL Excels MUST have the same data (column) format 
+- only with 1 sheet in each Excels
+- Excels must located in the third level folder, example:
 
 ```
 ecProject\io_Input_Excel_Folder\simples\ORGDATA.XLS
@@ -18,10 +18,10 @@ ecProject\io_Input_Excel_Folder\simples\ORGDATA.XLS
 ### feature
 
 - automatically create table using excel's column name
-- automatically detect the region (start/end) of excels
+- automatically detect the region (start/end) of Excels
 - detailed logging info
-- tansfer excels in folders or whatever
-- combine *multiple* excel files into *one* db table (.sql)
+- transfer Excels in folders or whatever
+- combine *multiple* excel files into *one* DB table (.sql)
 
 ### Usage
 
@@ -76,7 +76,7 @@ tmp = transExcel2MysqlDB(tmpPath, cnt, startmark = 2)
 
 #### test part of data
 
-If you have a huge number of excels and you just wanna test this code or catch the debug infomation of excels (can open or not) with the `errinfo with finally` in logs, you can modify the row number below. Then it just takes limited rowdata with every excels. 
+If you have a huge number of Excels and you just wanna test this code or catch the debug information of Excels (can open or not) with the `errinfo with finally` in logs, you can modify the row number below. Then it just takes limited row data with every Excels. 
 
 ```
 # near line 85
@@ -89,17 +89,21 @@ edata <- edata[30:35,]
 
 #### errinfo with summary
 
-This is the record of faild insert-sqls. If you use folders to contain more than one excels, then every excel could output a part of `errinfo with summary`. Using this cache info we can find the wrong sql items with the help of Navivat, which could automatically valid the wrong position esaily.
+This is the record of failed insert-sqls. If you use folders to contain more than one Excels, then every excel could output a part of `errinfo with summary`. Using this cache info we can find the wrong sql items with the help of Navicat, which could automatically valid the wrong position easily.
 
 ![](https://cdn.jsdelivr.net/gh/TianZonglin/tuchuang/img/20200621114705.png)
 
-Then you can modify the code of `tool_excel2mysql` to fix it or just give  me a feedback.
+Then you can modify the code of `tool_excel2mysql` to fix it or just give me feedback.
 
 #### errinfo with finally
 
-This is the global information with the unreadable excels and final summaries. If one excel appears here, then you need to check this file manually to find what's the real problem it has. Sometimes it could rerun well after resave (open it then save it) these excels by your hands. 
+This is the global information with the unreadable Excels and final summaries. If one excel appears here, then you need to check this file manually to find what's the real problem it has. Sometimes it could rerun well after resave (open it then save it) these Excels by your hands. 
 
-Basically the tool could transfer data from (my) xls, xlsx files to mysql soomthly with almost 100% success rate. (that screenshot was a demo to show errinfo)
+Basically the tool could transfer data from (my) xls, xlsx files to mysql smoothly with almost 100% success rate. (that screenshot was a demo to show errinfo)
+
+---
+
+[中文说明]()
 
 ---
 

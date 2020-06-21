@@ -148,7 +148,7 @@ transExcel2MysqlDB <- function(fpath,allFiles) {
     for (i in iStartRow:iEndRow){
       # i =2 只实验一条的解析
       endString =NULL
-      for(j in 2:colNum){
+      for(j in 1:colNum){
         tmpd = str_replace_all(unlist(as.list(edata[i,][j])),"'","’")
         if(j==colNum){
           endString <- paste(endString,"'",tmpd,"'",sep="")

@@ -1,6 +1,5 @@
 .gitignore
-deploy.bat
-*.bat
+!deploy.bat
 *.*
 !ORGDATA.XLS
 !ORGDATA.XLS_let this file alone in the whole folder if you wanna test it

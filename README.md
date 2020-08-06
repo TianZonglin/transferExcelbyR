@@ -95,7 +95,7 @@ edata <- edata[30:35,]
 
 ![](https://cdn.jsdelivr.net/gh/TianZonglin/tuchuang/img/20200621113612.png)
 
-#### errinfo with summary
+#### errinfo with `Summary`
 
 This is the record of failed insert-sqls. If you use folders to contain more than one Excels, then every excel could output a part of `errinfo with summary`. Using this cache info we can find the wrong sql items with the help of Navicat, which could automatically valid the wrong position easily.
 
@@ -103,7 +103,7 @@ This is the record of failed insert-sqls. If you use folders to contain more tha
 
 Then you can modify the code of `tool_excel2mysql` to fix it or just give me feedback.
 
-#### errinfo with finally
+#### errinfo with `Finally`
 
 This is the global information with the unreadable Excels and final summaries. If one excel appears here, then you need to check this file manually to find what's the real problem it has. Sometimes it could rerun well after resave (open it then save it) these Excels by your hands. 
 
